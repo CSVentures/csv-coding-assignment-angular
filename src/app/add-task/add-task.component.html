@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" fxLayout="row" fxLayout="start center" fxLayoutGap="10px">
+    <button mat-icon-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>{{title}}</span>
+</mat-toolbar>
+<div fxLayout="row" class="p10 mat-elevation-z2">
+    <div [formGroup]="todoForm" fxLayout="column" fxLayoutGap="10px" fxFlex="30">
+        <mat-form-field appearance="fill">
+            <mat-label>description</mat-label>
+            <input matInput formControlName="description">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>assignee</mat-label>
+            <mat-select formControlName="assigneeId">
+                <mat-option *ngFor="let item of assignee" [value]="item.id">
+                    {{item.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>completed</mat-label>
+            <mat-select formControlName="completed">
+                <mat-option *ngFor="let item of status" [value]="item">
+                    {{item}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="submit()">
+            SUBMIT
+        </button>
+    </div>
+
+</div>

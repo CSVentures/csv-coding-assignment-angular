@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, throwError } from "rxjs";
 import { delay, tap } from "rxjs/operators";
-
+import { v4 as uuidv4 } from 'uuid';
 /**
  * This service acts as a mock backend.
  *
@@ -27,20 +27,22 @@ function randomDelay() {
 @Injectable()
 export class BackendService {
   storedTasks: Task[] = [
-    {
-      id: 0,
-      description: "Install a monitor arm",
-      assigneeId: 111,
-      completed: false
-    },
-    {
-      id: 1,
-      description: "Move the desk to the new location",
-      assigneeId: 111,
-      completed: false
-    }
+    // {
+    //   id: 0,
+    //   description: "Install a monitor arm",
+    //   assigneeId: 111,
+    //   completed: false
+    // },
+    // {
+    //   id: 1,
+    //   description: "Move the desk to the new location",
+    //   assigneeId: 111,
+    //   completed: false
+    // }
   ];
 
+  public data = JSON.parse(localStorage.getItem('todo'))
+  public valus = this.data['tasks']
   storedUsers: User[] = [
     { id: 111, name: "Mike" },
     { id: 222, name: "James" }
@@ -48,15 +50,23 @@ export class BackendService {
 
   lastId = 1;
 
-  private findTaskById = id =>
-    this.storedTasks.find(task => task.id === +id);
+  public findTaskById = (id: any) =>
+    this.valus.find(task => task.id === id);
 
-  private findUserById = id => this.storedUsers.find(user => user.id === +id);
-
+  private findUserById = (id: any) => this.storedUsers.find(user => user.id === id);
+  /**
+   * 
+   * @returns 
+   */
   tasks() {
     return of(this.storedTasks).pipe(delay(randomDelay()));
   }
 
+  /**  
+   * 
+   * @param id 
+   * @returns 
+   */
   task(id: number): Observable<Task> {
     return of(this.findTaskById(id)).pipe(delay(randomDelay()));
   }
@@ -68,18 +78,22 @@ export class BackendService {
   user(id: number) {
     return of(this.findUserById(id)).pipe(delay(randomDelay()));
   }
+  /**
+   * 
+   * @param payload 
+   * @returns 
+   */
+  newTask(payload: any) {
+    // const newTask: Task = {
+    //   id:  uuidv4(),
+    //   description: payload.description,
+    //   assigneeId: null,
+    //   completed: false
+    // };
 
-  newTask(payload: { description: string }) {
-    const newTask: Task = {
-      id: ++this.lastId,
-      description: payload.description,
-      assigneeId: null,
-      completed: false
-    };
+    this.storedTasks = this.storedTasks.concat(payload);
 
-    this.storedTasks = this.storedTasks.concat(newTask);
-
-    return of(newTask).pipe(delay(randomDelay()));
+    return of(payload).pipe(delay(randomDelay()));
   }
 
   assign(taskId: number, userId: number) {
@@ -90,6 +104,12 @@ export class BackendService {
     return this.update(taskId, { completed });
   }
 
+  /**
+   * 
+   * @param taskId 
+   * @param updates 
+   * @returns 
+   */
   update(taskId: number, updates: Partial<Omit<Task, "id">>) {
     const foundTask = this.findTaskById(taskId);
 
